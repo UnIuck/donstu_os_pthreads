@@ -38,7 +38,7 @@ extern pthread_mutex_t g_lock;
 pid_t getThreadID(void);
 
 // write a string from thread with mutex
-void write_line(const char *msg);
+int write_line(const char *msg);
 
 // pointer for thread's function
 void *func_thread(void *arg);

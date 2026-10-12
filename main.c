@@ -7,13 +7,14 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
-
 int main(void) {
     // headline
     about();
+
     // array with threads
     pthread_t threads[COUNT_THREADS];
     struct ThreadArgs args[COUNT_THREADS];
+    char main_buf[256];
 
     // sys call - open
     // file, modes, rights
@@ -23,20 +24,20 @@ int main(void) {
         return EXIT_FAILURE;
     }
 
-    printf("main: pid = %d, opened file: \'output.log\' (fd = %d)\n", getThreadID(), g_fd);
+    // задание 8: вместо printf → write_line (через snprintf)
+    snprintf(main_buf, sizeof(main_buf),
+             "main: pid = %d, opened file: 'output.log' (fd = %d)\n",
+             getThreadID(), g_fd);
+    write_line(main_buf);
 
-    // create structs for threads
-    args[0].id  = 1;
-    strcpy(args[0].tag, "First\0");
-    args[1].id  = 2;
-    strcpy(args[1].tag, "Second\0");
-    args[2].id  = 3;
-    strcpy(args[2].tag, "Third\0");
-    args[3].id  = 4;
-    strcpy(args[3].tag, "Fourth\0");
-    
+    // задание 7: цикл snprintf вместо ручного strcpy
+    for (int i = 0; i < COUNT_THREADS; ++i) {
+        args[i].id = i + 1;
+        snprintf(args[i].tag, sizeof(args[i].tag), "T%d", i);
+    }
+
     // create threads
-    for (int i = 0; i < COUNT_THREADS; i++) {
+    for (int i = 0; i < COUNT_THREADS; ++i) {
         int rc = pthread_create(&threads[i], NULL, func_thread, &args[i]);
         if (rc != 0) {
             fprintf(stderr, "pthread_create: %s\n", strerror(rc));
@@ -44,18 +45,22 @@ int main(void) {
         }
     }
 
-    // wait stoping all thread
-    for (int i = 0; i < COUNT_THREADS; i++) {
+    // wait stopping all threads
+    for (int i = 0; i < COUNT_THREADS; ++i) {
         pthread_join(threads[i], NULL);
     }
+
+    // последнее сообщение в лог — ДО уничтожения мьютекса!
+    write_line("main: all threads finished, file closed\n");
+
+    // remove mutex
+    pthread_mutex_destroy(&g_lock);
 
     // sys call for close file
     if (close(g_fd) < 0) {
         perror("close");
         return EXIT_FAILURE;
     }
-    // remove mutex
-    pthread_mutex_destroy(&g_lock);
-    printf("main: all threads finished, file closed\n");
+
     return EXIT_SUCCESS;
 }

@@ -1,4 +1,5 @@
 #include "pthreadfuncs.h"
+#include <time.h>
 
 // common resources - is a file for logging
 int g_fd = -1;
@@ -10,14 +11,16 @@ pid_t getThreadID(void) {
 }
 
 // write a string from thread with mutex
-void write_line(const char *msg) {
+int write_line(const char *msg) {
     pthread_mutex_lock(&g_lock);
     ssize_t n = write(g_fd, msg, strlen(msg));
     if (n < 0) {
-        // return error
         fprintf(stderr, "write() failed: %s, [file descr = %d]\n", strerror(errno), g_fd);
+        pthread_mutex_unlock(&g_lock);
+        return -1;
     }
     pthread_mutex_unlock(&g_lock);
+    return 0;
 }
 
 // function for thread
@@ -31,7 +34,8 @@ struct ThreadArgs *t = (struct ThreadArgs *)arg;
                  "[tag = %s] pid = %d ppid = %d tid = %d iter = %d\n", t->tag, getpid(), getppid(), getThreadID(), i);
         write_line(buf);
         // imitation of something
-        usleep(100 * 1000); /* 100 мс */
+        struct timespec req = {0, 100000000};
+	nanosleep(&req, NULL); /* 100 мс */
     }
     return NULL;
 }
