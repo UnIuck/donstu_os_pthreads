@@ -32,8 +32,10 @@ int main(void) {
 
     // задание 7: цикл snprintf вместо ручного strcpy
     for (int i = 0; i < COUNT_THREADS; ++i) {
-        args[i].id = i + 1;
-        snprintf(args[i].tag, sizeof(args[i].tag), "T%d", i);
+    args[i].id = i + 1;
+    snprintf(args[i].tag, sizeof(args[i].tag), "T%d", i);
+    snprintf(args[i].message, sizeof(args[i].message),
+             "Hello from thread %d", i);
     }
 
     // create threads

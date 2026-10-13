@@ -26,18 +26,17 @@ int write_line(const char *msg) {
 // function for thread
 void *func_thread(void *arg){
 struct ThreadArgs *t = (struct ThreadArgs *)arg;
-    char buf[128];
+    char buf[256];
     if (t->id == 1) {
     pthread_detach(pthread_self());
     }
     // write something in opened file
     for (int i = 0; i < COUNT_ITERATIONS; ++i) {
-        // here we write process id, parent process id, thread id, and name of thread with iteration
-        snprintf(buf, sizeof(buf),
-         "[tag = %s] pid = %d ppid = %d tid = %d pthread_self = %lu iter = %d\n",
-         t->tag, getpid(), getppid(), getThreadID(),
-         (unsigned long)pthread_self(), i);
-        write_line(buf);
+    snprintf(buf, sizeof(buf),
+             "[tag = %s] pid = %d tid = %d pthread_self = %lu iter = %d msg = '%s'\n",
+             t->tag, getpid(), getThreadID(),
+             (unsigned long)pthread_self(), i, t->message);
+    write_line(buf);
         // imitation of something
         struct timespec req = {0, 100000000};
 	nanosleep(&req, NULL); /* 100 мс */

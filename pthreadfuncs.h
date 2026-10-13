@@ -21,10 +21,9 @@
 
 // struct send to thread
 struct ThreadArgs {
-    // my ID of thread
-    int  id;
-    // something string (with name of thread, f.e.)
+    int id;
     char tag[10];
+    char message[64];   // задание 24: своё сообщение от потока
 };
 
 
