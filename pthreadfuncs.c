@@ -3,6 +3,7 @@
 #include <stdlib.h>
 // common resources - is a file for logging
 int g_fd = -1;
+int g_counter = 0;
 pthread_mutex_t g_lock = PTHREAD_MUTEX_INITIALIZER;
 
 // git ID of current thread
@@ -46,6 +47,9 @@ struct ThreadArgs *t = (struct ThreadArgs *)arg;
         // Задание 23: возвращаем 42 для не-detached потоков
     // Задание 25: для НЕ-detached потоков возвращаем malloc-строку
     // Задание 25: для НЕ-detached потоков (кроме id=100) возвращаем malloc-строку
+    for (int j = 0; j < 100000; ++j) {
+    g_counter++;
+}
     if (t->id != 1 && t->id != 100) {
         char *result = (char *)malloc(64);
         if (result != NULL) {

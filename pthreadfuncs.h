@@ -35,6 +35,7 @@ extern int g_fd;
 // mutex
 extern pthread_mutex_t g_lock;
 
+extern int g_counter;   // задание 29
 // git ID of current thread
 pid_t getThreadID(void);
 

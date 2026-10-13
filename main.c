@@ -96,7 +96,10 @@ int main(void) {
             write_line("main: поток вернул NULL (detached)\n");
         }
     }
-
+    char counter_buf[128];
+    snprintf(counter_buf, sizeof(counter_buf),
+             "main: g_counter = %d (ожидалось 400000)\n", g_counter);
+    write_line(counter_buf);
     // последнее сообщение в лог — ДО уничтожения мьютекса
     write_line("main: all threads finished, file closed\n");
 
