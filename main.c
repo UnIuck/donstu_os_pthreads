@@ -57,12 +57,15 @@ int main(void) {
                  "main: pthread_join для потока %d: %s (rc=%d)\n",
                  i, strerror(rc), rc);
         write_line(msg);
-    } else {
-        long value = (long)retval;
+    } else if (retval != NULL) {
+        char *received = (char *)retval;
         char msg[256];
         snprintf(msg, sizeof(msg),
-                 "main: поток %d вернул %ld\n", i, value);
+                 "main: поток %d вернул: '%s'\n", i, received);
         write_line(msg);
+        free(received);   
+    } else {
+        write_line("main: поток вернул NULL (detached)\n");
     }
 }
 

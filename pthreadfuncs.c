@@ -1,6 +1,6 @@
 #include "pthreadfuncs.h"
 #include <time.h>
-
+#include <stdlib.h>
 // common resources - is a file for logging
 int g_fd = -1;
 pthread_mutex_t g_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -42,10 +42,17 @@ struct ThreadArgs *t = (struct ThreadArgs *)arg;
 	nanosleep(&req, NULL); /* 100 мс */
     }
         // Задание 23: возвращаем 42 для не-detached потоков
-    if (t->id != 1) {
-        pthread_exit((void *)42L);
+    // Задание 25: для НЕ-detached потоков возвращаем malloc-строку
+if (t->id != 1) {
+    char *result = (char *)malloc(64);
+    if (result != NULL) {
+        snprintf(result, 64, "Thread %d done %d iterations", t->id, COUNT_ITERATIONS);
     }
-    return NULL;
+    pthread_exit((void *)result);
+}
+
+// Для detached потока (id == 1) возвращать нечего
+return NULL;
 }
 
 
