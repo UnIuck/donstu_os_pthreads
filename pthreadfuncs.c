@@ -27,6 +27,8 @@ int write_line(const char *msg) {
 void *func_thread(void *arg){
 struct ThreadArgs *t = (struct ThreadArgs *)arg;
     char buf[256];
+    int is_detached_malloc = (t->id == 100);   // Задание 26: структура из malloc
+
     if (t->id == 1) {
     pthread_detach(pthread_self());
     }
@@ -43,16 +45,21 @@ struct ThreadArgs *t = (struct ThreadArgs *)arg;
     }
         // Задание 23: возвращаем 42 для не-detached потоков
     // Задание 25: для НЕ-detached потоков возвращаем malloc-строку
-if (t->id != 1) {
-    char *result = (char *)malloc(64);
-    if (result != NULL) {
-        snprintf(result, 64, "Thread %d done %d iterations", t->id, COUNT_ITERATIONS);
+    // Задание 25: для НЕ-detached потоков (кроме id=100) возвращаем malloc-строку
+    if (t->id != 1 && t->id != 100) {
+        char *result = (char *)malloc(64);
+        if (result != NULL) {
+            snprintf(result, 64, "Thread %d done %d iterations", t->id, COUNT_ITERATIONS);
+        }
+        pthread_exit((void *)result);
     }
-    pthread_exit((void *)result);
-}
 
-// Для detached потока (id == 1) возвращать нечего
-return NULL;
+    // Задание 26: освобождаем malloc-структуру detached потока
+    if (is_detached_malloc) {
+        free(t);
+    }
+
+    return NULL;
 }
 
 
