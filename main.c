@@ -47,8 +47,22 @@ int main(void) {
 
     // wait stopping all threads
     for (int i = 0; i < COUNT_THREADS; ++i) {
-        pthread_join(threads[i], NULL);
+    void *retval = NULL;
+    int rc = pthread_join(threads[i], &retval);
+    if (rc != 0) {
+        char msg[256];
+        snprintf(msg, sizeof(msg),
+                 "main: pthread_join для потока %d: %s (rc=%d)\n",
+                 i, strerror(rc), rc);
+        write_line(msg);
+    } else {
+        long value = (long)retval;
+        char msg[256];
+        snprintf(msg, sizeof(msg),
+                 "main: поток %d вернул %ld\n", i, value);
+        write_line(msg);
     }
+}
 
     // последнее сообщение в лог — ДО уничтожения мьютекса!
     write_line("main: all threads finished, file closed\n");

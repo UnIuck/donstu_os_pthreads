@@ -27,18 +27,28 @@ int write_line(const char *msg) {
 void *func_thread(void *arg){
 struct ThreadArgs *t = (struct ThreadArgs *)arg;
     char buf[128];
+    if (t->id == 1) {
+    pthread_detach(pthread_self());
+    }
     // write something in opened file
     for (int i = 0; i < COUNT_ITERATIONS; ++i) {
         // here we write process id, parent process id, thread id, and name of thread with iteration
         snprintf(buf, sizeof(buf),
-                 "[tag = %s] pid = %d ppid = %d tid = %d iter = %d\n", t->tag, getpid(), getppid(), getThreadID(), i);
+         "[tag = %s] pid = %d ppid = %d tid = %d pthread_self = %lu iter = %d\n",
+         t->tag, getpid(), getppid(), getThreadID(),
+         (unsigned long)pthread_self(), i);
         write_line(buf);
         // imitation of something
         struct timespec req = {0, 100000000};
 	nanosleep(&req, NULL); /* 100 мс */
     }
+        // Задание 23: возвращаем 42 для не-detached потоков
+    if (t->id != 1) {
+        pthread_exit((void *)42L);
+    }
     return NULL;
 }
+
 
 void about()  {
     printf("Pthread example\n");
