@@ -29,7 +29,14 @@ void *func_thread(void *arg){
 struct ThreadArgs *t = (struct ThreadArgs *)arg;
     char buf[256];
     int is_detached_malloc = (t->id == 100);   // Задание 26: структура из malloc
-
+    // Задание 33: проверка pthread_equal
+    pthread_t self_check = pthread_self();
+    if (pthread_equal(self_check, pthread_self())) {
+       char eq_buf[128];
+       snprintf(eq_buf, sizeof(eq_buf),
+                 "[tag = %s] pthread_equal(self, self) = true\n", t->tag);
+        write_line(eq_buf);
+}
     if (t->id == 1) {
     pthread_detach(pthread_self());
     }
