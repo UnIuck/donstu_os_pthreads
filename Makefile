@@ -1,4 +1,4 @@
-CC = gcc
+CC = clang
 CFLAGS = -Wall -Wextra -g -pthread
 TARGET = app
 OBJS = main.o pthreadfuncs.o
